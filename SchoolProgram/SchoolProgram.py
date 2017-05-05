@@ -1,12 +1,12 @@
 import random
-import exit
+from sys import exit
+
 
 class Person(object):
 
 
     def __init__(self, name):
         self.name = name
-        self.grade = None
         self.school = None
 
 
@@ -23,17 +23,18 @@ class Teacher(Person):
 
     def __init__(self, name, grade):
         super(Teacher, self).__init__(name)
-        super(Teacher, self).__init__(grade)
+        self.grade = grade
         self.students = None
 
     size_cap = 10
+
 
 class Student(Person):
 
 
     def __init__(self, name, grade, GPA):
         super(Student, self).__init__(name)
-        super(Student, self).__init__(grade)
+        self.grade = grade
         self.GPA = GPA
         self.teacher = None
 
@@ -49,53 +50,126 @@ school = {
     'teachers': {
 
     },
+    'grade_teachers': {
+        'Kindergarten': {},
+        '1st Grade': {},
+        '2nd Grade': {},
+        '3rd Grade': {},
+        '4th Grade': {},
+        '5th Grade': {},
+        '6th Grade': {},
+        '7th Grade': {},
+        '8th Grade': {},
+        '9th Grade': {},
+        ' 10th Grade': {},
+        '11th Grade': {},
+        '12th Grade:': {}
+    },
 }
 
+
 first_names = open('firstnames.txt', 'rb').read().splitlines()
-last_names = open('lastnames.txt', 'rb').read().splitlines() #.title()
+last_names = open('lastnames.txt', 'rb').read().splitlines()
 school_names = open('schoolnames.txt', 'rb').read().splitlines()
 credentials_school = open('credentials.txt', 'rb').read().splitlines()
 
 number_of_teachers = None
 number_of_students = None
 principal_name = None
+
 grades = ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade',
 '5th Grade', '6th Grade', '7th Grade', '8th Grade', '9th Grade', ' 10th Grade',
 '11th Grade', '12th Grade']
 
 
-def action(act):
-    enroll =
-    job_apply =
-    grade_check =
-    tour =
-    help =
-    yes =
-    no =
+def action():
+    global grades
+    global school
+    global student_name
+
+    commands = {
+
+    }
+    commands['enroll'] = ('e', 'enroll', 'enroll child', 'enroll student')
+    commands['apply'] = ('apply', 'a', 'apply for job', 'apply to be teacher',
+'apply to be a teacher')
+    commands['grades'] = ('grades', 'g', 'check', 'check grades', 'students grades',
+'check students grades')
+    commands['tour'] = ('tour', 't', 'take tour', 'tour the school', 'tour school')
+    commands['help'] = ('help', 'h' 'get help', 'ask for help')
+    commands['yes'] = ('yes', 'y')
+    commands['no'] = ('no', 'n')
+    commands['dicrectory'] = ('directory', 'd', 'look up', 'directory look up')
+
+    queries = True
 
 
     while queries == True:
-        if act in enroll:
+        act = (raw_input('\nWhat can we help you with today?\n> ').lower())
 
-        elif act in job_apply:
+        if act in school['students']:
+            pass
 
-        elif act in grade_check:
+        elif act in school['teachers']:
+            pass
 
-        elif act in tour:
+        elif act in commands['dicrectory']:
+            pass
 
-        elif act in help:
+        elif act in commands['enroll']:
+            pass
+
+        elif act in commands['apply']:
+            pass
+
+        elif act in commands['grades']:
+            pass
+
+        elif act in commands['tour']:
+            grade_choice = (raw_input('\nWhat grades classes would you like to \
+see?\n> '))
+            for teacher in school['teachers']:
+                if grade_choice in grades:
+                    if grade_choice in school['teachers'][teacher].grade:
+                        school['grade_teachers'][grade_choice][teacher] = teacher
+
+            print '\nExcelent!'
+            print 'In %s we have:' % grade_choice
+            print school['grade_teachers'][grade_choice].values()
+
+        elif act in commands['help']:
+            print '\n You can look for students and teachers by name or via \
+the directory.'
+            print 'Or you can use a few commands to help us help you.'
+            print '\nThey are: \n'
+            for key in commands.keys():
+                print key
+            print '\nEach one has a few options you can use.'
+            yes_no = (raw_input('\nWould you like to see options for one?\n> '))
+            if yes_no in commands['yes']:
+                choice = (raw_input('\nPut one in to see it\'s options or \
+use back if you are done.\n> '))
+                for k, command in commands.items():
+                    if choice in command:
+                        print '\n', command
+## look into printing without quotes and on seperate lines.
+
+            else:
+                print '\nAlright where were we...\n'
+
 
         else:
             print 'I don\'t think I can help you with that.'
             retry = (raw_input('Would you like to try something else?\n> '))
-                if retry in yes:
+            if retry in commands['yes']:
+                return
 
-                elif retry in no:
-                    exit('Have a nice day!')
+            elif retry in commands['no']:
+                exit('Have a nice day!')
 
-                else:
-                    print 'I am sorry we can\'t help you with that.'
-                    exit('Have a nice day!')
+            else:
+                print 'I am sorry we can\'t help you with that.'
+                exit('Have a nice day!')
 
 def teacher_gen():
     global number_of_teachers
@@ -160,6 +234,7 @@ def student_gen():
 
         teacher_assignment()
 
+
 def principal_gen():
     global school
     global first_names
@@ -204,12 +279,10 @@ as we like to keep classes small.' % Teacher.size_cap
     print 'We currently have  %d students.' % number_of_students
     print 'This is our lovely principal %s they got their masters \
 at %s.' % (school['principal'][principal_name].name, school['principal'][principal_name].credentials)
-    print 'What can we help you with today?'
+    print 'You can enroll a student, apply for a job, check your \
+students grades, tour the school, or ask for help.'
 
-    action_choice = (raw_input('You can enroll a student, apply for a job, \
-check how your child is doing, tour the school, or ask for help?\n> ').lower())
-
-    action(action_choice)
+    action()
 
 school_namer()
 size_generator()

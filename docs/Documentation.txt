@@ -1,1 +1,3 @@
-names.txt compiled from: https://nameberry.com/popular_names/US
+firstnames.txt compiled from: https://nameberry.com/popular_names/US
+lastnames.txt compiled from: http://names.mongabay.com/data/1000.html
+schoolnames.txt compiled from: http://www.fantasynamegenerators.com/school-names.php#.WQwjKdLytPY
