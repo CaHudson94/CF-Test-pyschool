@@ -16,7 +16,7 @@ per teacher.
     'author_email': 'c.ahudson84@yahoo.com',
     'version': '0.1',
     'install_requires': ['nose'],
-    'packages': ['CFEntryTest'],
+    'packages': ['SchoolProgram'],
     'scripts': [],
     'name': 'Code Fellows Entry Test'
 }
