@@ -88,6 +88,8 @@ grades = ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade',
 '11th Grade', '12th Grade']
 
 
+
+
 # The interface for user interaction with the school
 def action():
     global grades
@@ -114,33 +116,50 @@ def action():
     while queries == True:
         act = (raw_input('\nWhat can we help you with today?\n> ').lower())
 
-        if act in school['students']:
-            print school['students'][act]
-            repeat = (raw_input('\nCan we help you with something \
-else?\n> ').lower())
-            if repeat in commands['yes']:
-                return
-            else:
-                queries == False
 
-        elif act in school['teachers']:
-            print school['teachers'][act]
+        if act.title() in school['students']:
+            student = school['students'][act.title()]
+            #formatting taught by Tanner Lake
+            print 'Name: {}\nGrade: {}\nTeacher: {}\nGPA: {}'.format(
+                student.name
+                student.grade
+                student.teacher
+                student.GPA
+            )
             repeat = (raw_input('\nCan we help you with something \
 else?\n> ').lower())
             if repeat in commands['yes']:
                 return
             else:
-                queries == False
+                queries = False
+
+        elif act.title() in school['teachers']:
+            teacher = school['teachers'][act.title()]
+            #formatting taught by Tanner Lake
+            print "Name: {}\nGrade: {}\nStudents: {}".format(
+                teacher.name
+                teacher.grade
+                teacher.students
+            )
+            repeat = (raw_input('\nCan we help you with something \
+else?\n> ').lower())
+            if repeat in commands['yes']:
+                return
+            else:
+                queries = False
 
         elif act in commands['directory']:
             print 'First a list of the students:'
-            print school['students']
+            for name in school['students'].keys():
+                print name
 
             print '\n\nNow for the teachers:'
-            print school['teachers']
+            for name in school['teachers'].keys():
+                print name
 
             print '\n\n Last but not least our principal.'
-            print school['principal']
+            for name in school['principal'].keys():
+                print name
 
         elif act in commands['enroll']:
             print 'Wonderful let\'s get right to it then.'
@@ -151,39 +170,77 @@ else?\n> ').lower())
 in for?\n> ').lower())
             print 'Let\'s just double check we have room for your child in \
 one of our classes, one moment please.'
+            new_student = Student(
+                name = (name_first, name_last),
+                grade = grade_level,
+                GPA = '0%',
+            )
 
-            class_size_compare = {
-
-            }
-
-            if grade_level in grades:
-                for teacher in school['grade_teachers'][grade_level]:
-                    if len(school['teachers'][teacher].students) < 10:
-                        class_size_compare[teacher] = len(school['teachers'][teacher].students)
-                        assign = min(class_size_compare, key=class_size_compare.get)
-
+            teacher_found = _find_least_busy_teacher(new_student)
+            if teacher_found:
+                new_student.teacher = teacher_found.name
+                teacher_found.students.append(new_student.name)
+                school['students'][new_student.name]=new_student
+            if not teacher_found:
+                print 'It seems we are at capacity for that grade level.'
+                print 'I am very sorry, you are still welcome to look around \
+or learn about the staff and students.'
+                leave_or_stay()
 
 
         elif act in commands['apply']:
-            pass
+            print 'Fantastic, everyone will be delited to meet you.'
+            print 'But first lets get the paper work out of the way.'
+            name_first = (raw_input('What is you first name?\n> ').lower())
+            name_last = (raw_input('What is your last name?\n> ').lower())
+            grade_level = (raw_input('And what grade would you like to \
+teach?\n> ').lower())
+            print 'Great I am sure the kids will adore you %s, %s.' % (name_first, name_last)
+            new_teacher = Teacher(
+                name = (name_first, name_last)
+                grade = grade_level,
+                students = None,
+            )
 
-        elif act in commands['grades']:
-            pass
+            school['teachers'][new_teacher.name]=new_teacher
+            school['grade_teachers'][new_teacher.name]=new_teacher
+
+            print 'Excellent!'
+            print 'I speak for all the staff when I say we are excited to \
+work with you!'
+            print 'I am sure you will have class of your own very soon.'
 
         elif act in commands['tour']:
             grade_choice = (raw_input('\nWhat grades classes would you like to \
 see?\n> '))
-            for teacher in school['teachers']:
-                if grade_choice in grades:
-                    if grade_choice in school['teachers'][teacher].grade:
-                        school['grade_teachers'][grade_choice][teacher] = teacher
+            if grade_choice in grades:
+                print '\nExcelent!'
+                print 'In %s we have:' % grade_choice
+                print school['grade_teachers'][grade_choice].values()
+                see_class = (raw_input('\nWould you like to see one of their \
+classes?\n> ').lower())
+                if see_class in commands['yes']:
+                    class_choice = (raw_input('\nWho\'s class would you like to \
+see?\n> ').lower())
+                    if class_choice in school['teachers']:
+                        print 'Welcome to %s\'s class.' % class_choice
+                        print 'Here are their students: \n'
+                        for kid in school['teachers'][class_choice].students:
+                            print kid
+                            leave_or_stay()
+                    else:
+                        print 'I don\'t think they teach here?'
+                        leave_or_stay()
+                else:
+                    leave_or_stay()
+            else:
+                print 'I am not sure that is a grade.'
+                leave_or_stay()
 
-            print '\nExcelent!'
-            print 'In %s we have:' % grade_choice
-            print school['grade_teachers'][grade_choice].values()
+
 
         elif act in commands['help']:
-            help_command()
+            help_command(commands)
 
         else:
             print '\nI don\'t think I can help you with that.'
@@ -203,8 +260,9 @@ see?\n> '))
 again soon.'
     exit('Have a nice day, goodbye!')
 
+#function if time
 
-def help_command():
+def help_command(commands):
     print '\n You can look for students and teachers by name or via \
 the directory.'
     print 'Or you can use a few commands to help us help you.'
@@ -218,12 +276,9 @@ the directory.'
 use back if you are done.\n> '))
         for k, command in commands.items():
             if choice in command:
-                print '\n', command
-
-        print '\n That is not a command.'
-        print '\nAlright where were we...'
-
-## look into printing without quotes and on seperate lines.
+                print
+                for option in command:
+                    print option
 
     elif yes_no in commands['no']:
         print '\nAlright where were we...'
@@ -231,6 +286,15 @@ use back if you are done.\n> '))
     else:
         print '\n That is not a yes or no.'
         print '\nAlright where were we...'
+
+def leave_or_stay():
+    leave_or_stay = (raw_input('\n Alright is that it for today?\n> ').lower())
+    if leave_or_stay in commands['yes']:
+        return queries = False
+    elif leave_or_stay in commands['no']:
+        return
+    else:
+        return queries = False
 
 
 def teacher_gen():
@@ -251,6 +315,21 @@ def teacher_gen():
         )
 
         school['teachers'][teacher_name].students = []
+        for grade in school['grade_teachers']:
+            if school['teachers'][teacher_name].grade == school['grade_teachers'][grade]:
+                school['grade_teachers'][grade] = teacher_name
+
+#reformated by Tanner Lake
+def _find_least_busy_teacher(student):
+    class_size_compare = {}
+
+    for teacher in school['teachers'].values():
+        if (student.grade == teacher.grade) \
+        and (len(teacher.students) < 10):
+            class_size_compare[teacher] = len(teacher.students)
+
+    if class_size_compare:
+        return min(class_size_compare, key=class_size_compare.get)
 
 
 def student_gen():
@@ -266,34 +345,23 @@ def student_gen():
         student_grade = random.choice(grades)
         student_GPA = random.randint(0, 100)
 
-        school['students'][student_name] = Student (
+        new_student = Student(
             name = student_name,
             grade = student_grade,
             GPA = '%d%%' % student_GPA,
         )
 
-        class_size_compare = {
+        school['students'][student_name] = new_student
 
-        }
+        teacher_found = _find_least_busy_teacher(new_student)
 
-        assign = None
 
-        for teacher in school['teachers']:
-            if school['students'][student_name].grade == school['teachers'][teacher].grade:
-                if len(school['teachers'][teacher].students) < 10:
-                    class_size_compare[teacher] = len(school['teachers'][teacher].students)
-                    assign = min(class_size_compare, key=class_size_compare.get)
+        while not teacher_found:
+            new_student.grade = random.choice(grades)
+            teacher_found = _find_least_busy_teacher(new_student)
 
-        if assign:
-            school['students'][student_name].teacher = assign
-
-            for student in school['students']:
-                for class_teacher in school['students'][student].teacher:
-                    if school['teachers'][teacher_name] == class_teacher:
-                        school['teachers'][teacher_name]['students'].append(student)
-
-        elif not assign:
-            student_grade = random.choice(grades)
+        new_student.teacher = teacher_found.name
+        teacher_found.students.append(new_student.name)
 
 
 def principal_gen():
@@ -345,9 +413,16 @@ students grades, tour the school, or ask for help.'
 
     action()
 
-school_namer()
-size_generator()
-principal_gen()
-student_gen()
-teacher_gen()
-welcome()
+
+
+
+def main():
+    school_namer()
+    size_generator()
+    principal_gen()
+    teacher_gen()
+    student_gen()
+    welcome()
+
+if __name__ == "__main__":
+    main()
