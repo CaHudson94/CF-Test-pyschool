@@ -40,16 +40,21 @@ class Student(Person):
 
 
 school = {
+    # Name of the school
     'name': '',
+    # Principal
     'principal': {
 
     },
+    # All Students
     'students': {
 
     },
+    # All teachers
     'teachers': {
 
     },
+    # Each grade level with it's respective teachers
     'grade_teachers': {
         'Kindergarten': {},
         '1st Grade': {},
@@ -67,12 +72,13 @@ school = {
     },
 }
 
-
+# Pulls lists of data from file for generation
 first_names = open('firstnames.txt', 'rb').read().splitlines()
 last_names = open('lastnames.txt', 'rb').read().splitlines()
 school_names = open('schoolnames.txt', 'rb').read().splitlines()
 credentials_school = open('credentials.txt', 'rb').read().splitlines()
 
+# Variables to be set per run of program
 number_of_teachers = None
 number_of_students = None
 principal_name = None
@@ -82,6 +88,7 @@ grades = ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade',
 '11th Grade', '12th Grade']
 
 
+# The interface for user interaction with the school
 def action():
     global grades
     global school
@@ -96,10 +103,10 @@ def action():
     commands['grades'] = ('grades', 'g', 'check', 'check grades', 'students grades',
 'check students grades')
     commands['tour'] = ('tour', 't', 'take tour', 'tour the school', 'tour school')
-    commands['help'] = ('help', 'h' 'get help', 'ask for help')
+    commands['help'] = ('help', 'h', 'get help', 'ask for help')
     commands['yes'] = ('yes', 'y')
     commands['no'] = ('no', 'n')
-    commands['dicrectory'] = ('directory', 'd', 'look up', 'directory look up')
+    commands['directory'] = ('directory', 'd', 'look up', 'directory look up')
 
     queries = True
 
@@ -108,12 +115,19 @@ def action():
         act = (raw_input('\nWhat can we help you with today?\n> ').lower())
 
         if act in school['students']:
-            pass
+            for student in school['students']:
+                print student
+                repeat = (raw_input('\nCan we help you with something \
+else?\n> ').lower())
+                if repeat in commands['yes']:
+                    return
+                else:
+
 
         elif act in school['teachers']:
             pass
 
-        elif act in commands['dicrectory']:
+        elif act in commands['directory']:
             pass
 
         elif act in commands['enroll']:
@@ -138,29 +152,11 @@ see?\n> '))
             print school['grade_teachers'][grade_choice].values()
 
         elif act in commands['help']:
-            print '\n You can look for students and teachers by name or via \
-the directory.'
-            print 'Or you can use a few commands to help us help you.'
-            print '\nThey are: \n'
-            for key in commands.keys():
-                print key
-            print '\nEach one has a few options you can use.'
-            yes_no = (raw_input('\nWould you like to see options for one?\n> '))
-            if yes_no in commands['yes']:
-                choice = (raw_input('\nPut one in to see it\'s options or \
-use back if you are done.\n> '))
-                for k, command in commands.items():
-                    if choice in command:
-                        print '\n', command
-## look into printing without quotes and on seperate lines.
-
-            else:
-                print '\nAlright where were we...\n'
-
+            help_command()
 
         else:
-            print 'I don\'t think I can help you with that.'
-            retry = (raw_input('Would you like to try something else?\n> '))
+            print '\nI don\'t think I can help you with that.'
+            retry = (raw_input('\nWould you like to try something else?\n> '))
             if retry in commands['yes']:
                 return
 
@@ -170,6 +166,41 @@ use back if you are done.\n> '))
             else:
                 print 'I am sorry we can\'t help you with that.'
                 exit('Have a nice day!')
+                
+    print 'Thank you for visiting %s today.' % school['name']
+    print 'We hope you enjoyed your self and look forward to seeing you \
+again soon.'
+    exit('Have a nice day, goodbye!')
+
+
+def help_command():
+    print '\n You can look for students and teachers by name or via \
+the directory.'
+    print 'Or you can use a few commands to help us help you.'
+    print '\nThey are: \n'
+    for key in commands.keys():
+        print key
+    print '\nEach one has a few options you can use.'
+    yes_no = (raw_input('\nWould you like to see options for one?\n> '))
+    if yes_no in commands['yes']:
+        choice = (raw_input('\nPut one in to see it\'s options or \
+use back if you are done.\n> '))
+        for k, command in commands.items():
+            if choice in command:
+                print '\n', command
+
+        print '\n That is not a command.'
+        print '\nAlright where were we...'
+
+## look into printing without quotes and on seperate lines.
+
+    elif yes_no in commands['no']:
+        print '\nAlright where were we...'
+
+    else:
+        print '\n That is not a yes or no.'
+        print '\nAlright where were we...'
+
 
 def teacher_gen():
     global number_of_teachers
