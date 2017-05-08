@@ -66,7 +66,7 @@ school = {
         '7th Grade': {},
         '8th Grade': {},
         '9th Grade': {},
-        ' 10th Grade': {},
+        '10th Grade': {},
         '11th Grade': {},
         '12th Grade:': {}
     },
@@ -84,7 +84,7 @@ number_of_students = None
 principal_name = None
 
 grades = ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade', '4th Grade',
-'5th Grade', '6th Grade', '7th Grade', '8th Grade', '9th Grade', ' 10th Grade',
+'5th Grade', '6th Grade', '7th Grade', '8th Grade', '9th Grade', '10th Grade',
 '11th Grade', '12th Grade']
 
 
@@ -115,23 +115,54 @@ def action():
         act = (raw_input('\nWhat can we help you with today?\n> ').lower())
 
         if act in school['students']:
-            for student in school['students']:
-                print student
-                repeat = (raw_input('\nCan we help you with something \
+            print school['students'][act]
+            repeat = (raw_input('\nCan we help you with something \
 else?\n> ').lower())
-                if repeat in commands['yes']:
-                    return
-                else:
-
+            if repeat in commands['yes']:
+                return
+            else:
+                queries == False
 
         elif act in school['teachers']:
-            pass
+            print school['teachers'][act]
+            repeat = (raw_input('\nCan we help you with something \
+else?\n> ').lower())
+            if repeat in commands['yes']:
+                return
+            else:
+                queries == False
 
         elif act in commands['directory']:
-            pass
+            print 'First a list of the students:'
+            print school['students']
+
+            print '\n\nNow for the teachers:'
+            print school['teachers']
+
+            print '\n\n Last but not least our principal.'
+            print school['principal']
 
         elif act in commands['enroll']:
-            pass
+            print 'Wonderful let\'s get right to it then.'
+            name_first = (raw_input('What is the childs first name?\n> ').lower())
+            name_last = (raw_input('What is the childs last name?\n> ').lower())
+            print 'Fantastic I am sure we will love %s, %s.' % (name_first, name_last)
+            grade_level = (raw_input('And what grade will they be coming \
+in for?\n> ').lower())
+            print 'Let\'s just double check we have room for your child in \
+one of our classes, one moment please.'
+
+            class_size_compare = {
+
+            }
+
+            if grade_level in grades:
+                for teacher in school['grade_teachers'][grade_level]:
+                    if len(school['teachers'][teacher].students) < 10:
+                        class_size_compare[teacher] = len(school['teachers'][teacher].students)
+                        assign = min(class_size_compare, key=class_size_compare.get)
+
+
 
         elif act in commands['apply']:
             pass
@@ -158,7 +189,7 @@ see?\n> '))
             print '\nI don\'t think I can help you with that.'
             retry = (raw_input('\nWould you like to try something else?\n> '))
             if retry in commands['yes']:
-                return
+                pass
 
             elif retry in commands['no']:
                 exit('Have a nice day!')
@@ -166,7 +197,7 @@ see?\n> '))
             else:
                 print 'I am sorry we can\'t help you with that.'
                 exit('Have a nice day!')
-                
+
     print 'Thank you for visiting %s today.' % school['name']
     print 'We hope you enjoyed your self and look forward to seeing you \
 again soon.'
@@ -209,7 +240,7 @@ def teacher_gen():
 
     while len(school['teachers']) < number_of_teachers:
 
-        teacher_first = random.choice(first_names)
+        teacher_first = random.choice(first_names).title()
         teacher_last = random.choice(last_names).title()
         teacher_name = ('%s, %s') % (teacher_first, teacher_last)
         teacher_grade = random.choice(grades)
@@ -229,7 +260,7 @@ def student_gen():
 
     while len(school['students']) < number_of_students:
 
-        student_first = random.choice(first_names)
+        student_first = random.choice(first_names).title()
         student_last = random.choice(last_names).title()
         student_name = ('%s, %s') % (student_first, student_last)
         student_grade = random.choice(grades)
@@ -241,29 +272,28 @@ def student_gen():
             GPA = '%d%%' % student_GPA,
         )
 
-        def teacher_assignment():
+        class_size_compare = {
 
-            class_size_compare = {
+        }
 
-            }
+        assign = None
 
-            for teacher in school['teachers']:
-                if school['students'][student_name].grade == school['teachers'][teacher].grade:
-                    if len(school['teachers'][teacher].students) < 10:
-                        class_size_compare[teacher] = len(school['teachers'][teacher].students)
-                        assign = min(class_size_compare, key=class_size_compare.get)
+        for teacher in school['teachers']:
+            if school['students'][student_name].grade == school['teachers'][teacher].grade:
+                if len(school['teachers'][teacher].students) < 10:
+                    class_size_compare[teacher] = len(school['teachers'][teacher].students)
+                    assign = min(class_size_compare, key=class_size_compare.get)
 
-                        school['students'][student_name].teacher = assign
+        if assign:
+            school['students'][student_name].teacher = assign
 
-                        for student in school['students']:
-                            for class_teacher in school['students'][student].teacher:
-                                if school['teachers'][teacher_name] == class_teacher:
-                                    school['teachers'][teacher_name]['students'].append(student)
+            for student in school['students']:
+                for class_teacher in school['students'][student].teacher:
+                    if school['teachers'][teacher_name] == class_teacher:
+                        school['teachers'][teacher_name]['students'].append(student)
 
-                    elif len(school['teachers'][teacher].students) >= 10:
-                        student_grade = random.choice(grades)
-
-        teacher_assignment()
+        elif not assign:
+            student_grade = random.choice(grades)
 
 
 def principal_gen():
